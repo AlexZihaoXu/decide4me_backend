@@ -1,0 +1,5 @@
+firebase-admin
+google-cloud-firestore
+fastapi
+uvicorn
+python-dotenv

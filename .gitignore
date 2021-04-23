@@ -1,0 +1,7 @@
+.env
+awa_file
+downloaded_awa_file
+service_account.json
+__pycache__/
+*.py[cod]
+.idea
