@@ -50,3 +50,18 @@ class NewPostImageRequest(NewPostRequest):
         super().__init__(data)
         data = self.data
         self.image: UploadFile = file
+
+
+class VoteRequest(BaseRequest):
+
+    def __init__(self, data: dict):
+        super().__init__(data)
+        data = self.data
+        self.post_id = data.get('postID', str)
+
+
+class VoteTextRequest(VoteRequest):
+
+    def __init__(self, data: dict):
+        super().__init__(data)
+

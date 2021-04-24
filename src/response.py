@@ -48,7 +48,6 @@ class NewPostTextResponse(BaseResponse):
         self.request: NewPostTextRequest = request
 
     def process(self) -> dict:
-
         collection = database.collection("posts")
         uid = auth.verify_id_token(self.request.id_token)["uid"]
 
@@ -82,30 +81,35 @@ class NewPostImageResponse(BaseResponse):
         self.request: NewPostImageRequest = self.request
 
     def process(self) -> dict:
-        image_id = ''.join(
-            [
-                chr(
-                    random.randint(97, 123) if random.randint(0, 2) else
-                    random.randint(65, 91)
-                )
-                for i in range(64)
-            ]
-        )
+        result_image_path = generate_token() + "_" + self.request.image.filename
+        converting_image_path = generate_token() + "_" + self.request.image.filename
 
-        fp, path = open_file(["cache", "image"], image_id)
+        fp, converting_path = open_file(["cache", "images"], converting_image_path)
         fp.write(self.request.image.file.read())
         fp.close()
 
+        image = pygame.image.load(converting_path)
+        os.remove(converting_path)
+
+        max_len = 1024
+        w, h = image.get_size()
+        max_side = max(w, h)
+        rate = 1.0 if max_side < max_len else max_len/max_side
+
+        if rate != 1.0:
+            image = pygame.transform.smoothscale(image, (int(w*rate), int(h*rate)))
+        make_dirs(["cache", "images"])
+        pygame.image.save(image, "cache/images/"+result_image_path)
+
         blob = bucket.blob(
-            "images/"+image_id
+            "images/" + result_image_path
         )
 
-        blob.upload_from_filename(path)
-
-        os.remove(path)
+        blob.upload_from_filename("cache/images/"+result_image_path)
+        os.remove("cache/images/"+result_image_path)
 
         collection = database.collection("posts")
-        uid = 'ovo'  # auth.verify_id_token(self.request.id_token)["uid"]
+        uid = auth.verify_id_token(self.request.id_token)["uid"]
 
         collection.add(
             {
@@ -124,3 +128,5 @@ class NewPostImageResponse(BaseResponse):
         )
 
         return {}
+
+

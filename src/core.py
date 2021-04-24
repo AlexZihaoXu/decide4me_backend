@@ -1,3 +1,5 @@
+import random
+
 import firebase_admin
 import os
 import dotenv
@@ -12,15 +14,32 @@ database: firestore.Client = firestore.Client()
 bucket = storage.bucket()
 
 
-def open_file(path: "list[str]", name: str):
-    path = ''
+def make_dirs(path: "list[str]"):
+    p = ''
     for node in path:
-        path += node + "/"
+        p += node + "/"
         try:
-            os.mkdir(path)
+            os.mkdir(p)
         except FileExistsError:
             pass
-    return open(path+name, 'wb'), path+name
+    return p
+
+
+def open_file(path: "list[str]", name: str, method='wb'):
+    path = make_dirs(path)
+    return open(path+name, method), path+name
+
+
+def generate_token() -> str:
+    return ''.join(
+        [
+            chr(
+                random.randint(97, 122) if random.randint(0, 1) else
+                random.randint(65, 90)
+            )
+            for i in range(16)
+        ]
+    )
 
 
 class Data:
