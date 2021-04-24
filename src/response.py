@@ -25,7 +25,16 @@ class RecommendationResponse(BaseResponse):
         for data in database.collection("posts"). \
             order_by("time", direction=firestore.Query.DESCENDING).\
                 offset(self.request.start).limit(self.request.length).stream():
-            result.append(data.to_dict())
+            post = data.to_dict()
+            user = database.collection("users"). \
+                document(post['userID']).get().to_dict()
+            result.append(
+                {
+                    "id": data.id,
+                    "post": post,
+                    "user": user
+                }
+            )
         return {
             "data": result
         }
@@ -76,6 +85,7 @@ class NewPostTextResponse(BaseResponse):
                 "time": firestore.SERVER_TIMESTAMP,
                 "views": 0,
                 "targetVotes": self.request.target_votes,
+                "isAnonymous": self.request.is_anonymous,
                 "text": {
                     "choices": [
                         {
@@ -137,9 +147,14 @@ class NewPostImageResponse(BaseResponse):
                 "time": firestore.SERVER_TIMESTAMP,
                 "views": 0,
                 "targetVotes": self.request.target_votes,
+                "isAnonymous": self.request.is_anonymous,
                 "text": None,
                 "image": {
                     "imageUrl": "/images/" + result_image_path,
+                    "size": {
+                        "width": image.get_width(),
+                        "height": image.get_height()
+                    },
                     "results": {}
                 }
             }

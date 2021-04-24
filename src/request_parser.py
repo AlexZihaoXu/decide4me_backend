@@ -12,6 +12,7 @@ class BaseRequest:
 class RecommendationRequest(BaseRequest):
 
     def __init__(self, data: dict):
+        data['idToken'] = 'None'
         super().__init__(data)
         data = self.data
 
@@ -37,6 +38,7 @@ class NewPostRequest(BaseRequest):
         self.title: str = self.data.get("title", str)
         self.description: str = self.data.get("description", str)
         self.target_votes: int = self.data.get("targetVotes", int)
+        self.is_anonymous: bool = self.data.get("isAnonymous", bool)
 
 
 class NewPostTextRequest(NewPostRequest):

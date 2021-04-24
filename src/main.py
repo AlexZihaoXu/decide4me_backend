@@ -27,7 +27,7 @@ async def req_register(data: dict):
     try:
         request = RegisterRequest(data)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
     response = RegisterResponse(request)
     return response.process()
@@ -38,7 +38,7 @@ async def req_new_post_text(data: dict):
     try:
         request = NewPostTextRequest(data)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
     response = NewPostTextResponse(request)
     return response.process()
@@ -50,7 +50,7 @@ async def req_new_post_image(data: str=Form(...), image: UploadFile = File(...))
     try:
         request = NewPostImageRequest(data, image)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
     response = NewPostImageResponse(request)
     return response.process()
@@ -61,7 +61,7 @@ async def req_vote_text(data: dict):
     try:
         request = VoteTextRequest(data)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     response = VoteTextResponse(request)
     return response.process()
 
@@ -71,7 +71,7 @@ async def req_vote_text(data: dict):
     try:
         request = VoteImageRequest(data)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     response = VoteImageResponse(request)
     return response.process()
 
@@ -81,7 +81,7 @@ async def req_register_notification(data: dict):
     try:
         request = RegisterNotificationRequest(data)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     response = RegisterNotificationResponse(request)
     return response.process()
 
@@ -91,7 +91,7 @@ async def req_recommendation(data: dict):
     try:
         request = RecommendationRequest(data)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     response = RecommendationResponse(request)
     return response.process()
 
