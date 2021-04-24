@@ -1,13 +1,26 @@
 import firebase_admin
+import os
 import dotenv
 from google.cloud import firestore
-from firebase_admin import auth
+from firebase_admin import auth, storage
 
 dotenv.load_dotenv()
 firebase_admin.initialize_app(options={
     'storageBucket': 'decide4me-pegasis.appspot.com'
 })
 database: firestore.Client = firestore.Client()
+bucket = storage.bucket()
+
+
+def open_file(path: "list[str]", name: str):
+    path = ''
+    for node in path:
+        path += node + "/"
+        try:
+            os.mkdir(path)
+        except FileExistsError:
+            pass
+    return open(path+name, 'wb'), path+name
 
 
 class Data:

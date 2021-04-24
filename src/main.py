@@ -1,23 +1,19 @@
-
+import json
+import os
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Form, Body
 from googleapiclient.model import BaseModel
+from starlette.responses import RedirectResponse
 
 from request_parser import *
 from response import *
 from core import *
 from fastapi.middleware.cors import CORSMiddleware
 
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:3000",
-    "*"
-]
 
-api = FastAPI()
-
-api.add_middleware(
+app = FastAPI()
+origins = ["*"]
+app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
@@ -26,17 +22,51 @@ api.add_middleware(
 )
 
 
-@api.post("/register")
-async def req_register(_data: dict):
+@app.post("/register")
+async def req_register(data: dict):
     try:
-        request = RegisterRequest(_data)
+        request = RegisterRequest(data)
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
     response = RegisterResponse(request)
     return response.process()
 
+
+@app.post("/new_post/text")
+async def req_new_post_text(data: dict):
+    try:
+        request = NewPostTextRequest(data)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    response = NewPostTextResponse(request)
+    return response.process()
+
+
+@app.post("/new_post/image")
+async def req_new_post_image(data: str=Form(...), image: UploadFile = File(...)):
+    data = json.loads(data)
+    try:
+        request = NewPostImageRequest(data, image)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    response = NewPostImageResponse(request)
+    return response.process()
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse("http://alex-xu.site:8000/")
+
+
 if __name__ == '__main__':
     # respond = RegisterResponse(request)
-    uvicorn.run(api, host="0.0.0.0", port=8080)
+    print(
+        "#" * 10 + "\n" + \
+        os.getcwd() + "\n" + \
+        "#" * 10
+    )
+    uvicorn.run(app, host="0.0.0.0", port=8080)
     ...
