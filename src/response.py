@@ -1,5 +1,6 @@
 import random
 import pygame
+import hashlib
 
 from request_parser import *
 from core import *

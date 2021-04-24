@@ -96,11 +96,6 @@ async def req_recommendation(data: dict):
     return response.process()
 
 
-@app.get("/")
-async def root():
-    return RedirectResponse("http://alex-xu.site:8000/")
-
-
 if __name__ == '__main__':
     # respond = RegisterResponse(request)
     print(
