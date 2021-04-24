@@ -122,8 +122,8 @@ class NewPostImageResponse(BaseResponse):
                 "targetVotes": self.request.target_votes,
                 "text": None,
                 "image": {
-                    "imageUrl": "images/" + result_image_path,
-                    "choices": {}
+                    "imageUrl": "/images/" + result_image_path,
+                    "results": {}
                 }
             }
         )
@@ -132,6 +132,7 @@ class NewPostImageResponse(BaseResponse):
 
 
 class VoteTextResponse(BaseResponse):
+
     def __init__(self, request: BaseRequest):
         super().__init__(request)
         self.request: VoteTextRequest = self.request
@@ -144,5 +145,23 @@ class VoteTextResponse(BaseResponse):
             data["text"]["choices"][data["text"]["results"][uid]]['vote'] -= 1
         data["text"]["choices"][self.request.choice_index]['vote'] += 1
         data["text"]["results"][uid] = self.request.choice_index
+        doc.update(data)
+        return {}
+
+
+class VoteImageResponse(BaseResponse):
+
+    def __init__(self, request: BaseRequest):
+        super().__init__(request)
+        self.request: VoteImageRequest = self.request
+
+    def process(self) -> dict:
+        doc = database.collection("posts").document(self.request.post_id)
+        data = doc.get().to_dict()
+        uid = 'ovo' # get_uid_of(self.request.id_token)
+        data['image']['results'][uid] = {
+            'x': self.request.choice_x,
+            'y': self.request.choice_y
+        }
         doc.update(data)
         return {}

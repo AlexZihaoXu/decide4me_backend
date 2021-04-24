@@ -66,6 +66,16 @@ async def req_vote_text(data: dict):
     return response.process()
 
 
+@app.post("/vote/image")
+async def req_vote_text(data: dict):
+    try:
+        request = VoteImageRequest(data)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    response = VoteImageResponse(request)
+    return response.process()
+
+
 @app.get("/")
 async def root():
     return RedirectResponse("http://alex-xu.site:8000/")

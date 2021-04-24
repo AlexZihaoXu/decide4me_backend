@@ -1,6 +1,6 @@
 from fastapi import File, UploadFile
 
-from core import Data
+from core import Data, number
 
 
 class BaseRequest:
@@ -66,3 +66,12 @@ class VoteTextRequest(VoteRequest):
         super().__init__(data)
         data = self.data
         self.choice_index: int = data.get("choiceIndex", int)
+
+
+class VoteImageRequest(VoteRequest):
+
+    def __init__(self, data: dict):
+        super().__init__(data)
+        data = self.data
+        self.choice_x = data.get("choiceX", number)
+        self.choice_y = data.get("choiceY", number)

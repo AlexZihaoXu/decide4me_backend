@@ -1,4 +1,5 @@
 import random
+from typing import Union
 
 import firebase_admin
 import os
@@ -12,6 +13,8 @@ firebase_admin.initialize_app(options={
 })
 database: firestore.Client = firestore.Client()
 bucket = storage.bucket()
+
+number = Union[int, float]
 
 
 def make_dirs(path: "list[str]"):
@@ -53,7 +56,8 @@ class Data:
     def get(self, key, _type: type = None):
         if key in self.data:
             if _type and (type(self.data[key]) != _type):
-                raise KeyError(f"""Wrong type of key: {str(key)} | Type: {type(self.data[key])} | Expected: {_type}""")
+                if not (_type == number and type(self.data[key]) in (int, float)):
+                    raise KeyError(f"""Wrong type of key: {str(key)} | Type: {type(self.data[key])} | Expected: {_type}""")
             return self.data[key]
         raise KeyError("Missing field: " + str(key))
 
