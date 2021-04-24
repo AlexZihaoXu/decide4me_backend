@@ -17,7 +17,7 @@ class RecommendationRequest(BaseRequest):
 
         self.start: int = data.get("start", int)
         self.length: int = data.get("length", int)
-        self.refreshID: str = data.get("string", str)
+        self.refreshID: str = data.get("refreshID", str)
 
 
 class RegisterRequest(BaseRequest):

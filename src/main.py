@@ -86,6 +86,16 @@ async def req_register_notification(data: dict):
     return response.process()
 
 
+@app.post("/recommendation")
+async def req_recommendation(data: dict):
+    try:
+        request = RecommendationRequest(data)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    response = RecommendationResponse(request)
+    return response.process()
+
+
 @app.get("/")
 async def root():
     return RedirectResponse("http://alex-xu.site:8000/")

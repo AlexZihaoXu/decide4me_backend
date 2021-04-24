@@ -14,6 +14,23 @@ class BaseResponse:
         raise NotImplemented("Method process not implemented!")
 
 
+class RecommendationResponse(BaseResponse):
+
+    def __init__(self, request: BaseRequest):
+        super().__init__(request)
+        self.request: RecommendationRequest = self.request
+
+    def process(self) -> dict:
+        result = []
+        for data in database.collection("posts"). \
+            order_by("time", direction=firestore.Query.DESCENDING).\
+                offset(self.request.start).limit(self.request.length).stream():
+            result.append(data.to_dict())
+        return {
+            "data": result
+        }
+
+
 class RegisterResponse(BaseResponse):
 
     def __init__(self, request: RegisterRequest):
