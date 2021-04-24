@@ -158,10 +158,26 @@ class VoteImageResponse(BaseResponse):
     def process(self) -> dict:
         doc = database.collection("posts").document(self.request.post_id)
         data = doc.get().to_dict()
-        uid = 'ovo' # get_uid_of(self.request.id_token)
+        uid = get_uid_of(self.request.id_token)
         data['image']['results'][uid] = {
             'x': self.request.choice_x,
             'y': self.request.choice_y
         }
         doc.update(data)
+        return {}
+
+
+class RegisterNotificationResponse(BaseResponse):
+
+    def __init__(self, request: BaseRequest):
+        super().__init__(request)
+        self.request: RegisterNotificationRequest = self.request
+
+    def process(self) -> dict:
+
+        document = database.collection("users").document(self.request.id_token)
+        data = document.get().to_dict()
+        data['notificationTokens'].append(self.request.notification_token)
+        document.update(data)
+
         return {}

@@ -75,3 +75,9 @@ class VoteImageRequest(VoteRequest):
         data = self.data
         self.choice_x = data.get("choiceX", number)
         self.choice_y = data.get("choiceY", number)
+
+
+class RegisterNotificationRequest(BaseRequest):
+    def __init__(self, data: dict):
+        super().__init__(data)
+        self.notification_token: str = self.data.get("notificationToken", str)

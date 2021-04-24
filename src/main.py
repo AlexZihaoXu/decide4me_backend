@@ -76,6 +76,16 @@ async def req_vote_text(data: dict):
     return response.process()
 
 
+@app.post("/register_notification")
+async def req_register_notification(data: dict):
+    try:
+        request = RegisterNotificationRequest(data)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    response = RegisterNotificationResponse(request)
+    return response.process()
+
+
 @app.get("/")
 async def root():
     return RedirectResponse("http://alex-xu.site:8000/")
