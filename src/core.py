@@ -25,6 +25,10 @@ def make_dirs(path: "list[str]"):
     return p
 
 
+def get_uid_of(id_token) -> str:
+    return auth.verify_id_token(id_token)["uid"]
+
+
 def open_file(path: "list[str]", name: str, method='wb'):
     path = make_dirs(path)
     return open(path+name, method), path+name

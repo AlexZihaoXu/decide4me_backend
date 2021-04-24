@@ -22,7 +22,7 @@ class RegisterResponse(BaseResponse):
 
     def process(self) -> dict:
         collection = database.collection("users")
-        uid = auth.verify_id_token(self.request.id_token)["uid"]
+        uid = get_uid_of(self.request.id_token)
         import google.api_core.exceptions
         content = {
             "id": uid,
@@ -49,11 +49,11 @@ class NewPostTextResponse(BaseResponse):
 
     def process(self) -> dict:
         collection = database.collection("posts")
-        uid = auth.verify_id_token(self.request.id_token)["uid"]
+        uid = get_uid_of(self.request.id_token)
 
         collection.add(
             {
-                "userId": uid,
+                "userID": uid,
                 "title": self.request.title,
                 "description": self.request.description,
                 "time": firestore.SERVER_TIMESTAMP,
@@ -66,9 +66,10 @@ class NewPostTextResponse(BaseResponse):
                             "vote": 0
                         }
                         for choice in self.request.choices
-                    ]
+                    ],
+                    "results": {}
                 },
-                "image": None
+                "image": None,
             }
         )
 
@@ -113,7 +114,7 @@ class NewPostImageResponse(BaseResponse):
 
         collection.add(
             {
-                "userId": uid,
+                "userID": uid,
                 "title": self.request.title,
                 "description": self.request.description,
                 "time": firestore.SERVER_TIMESTAMP,
@@ -121,8 +122,8 @@ class NewPostImageResponse(BaseResponse):
                 "targetVotes": self.request.target_votes,
                 "text": None,
                 "image": {
-                    "imageUrl": blob.public_url,
-                    "choices": []
+                    "imageUrl": "images/" + result_image_path,
+                    "choices": {}
                 }
             }
         )
@@ -130,3 +131,18 @@ class NewPostImageResponse(BaseResponse):
         return {}
 
 
+class VoteTextResponse(BaseResponse):
+    def __init__(self, request: BaseRequest):
+        super().__init__(request)
+        self.request: VoteTextRequest = self.request
+
+    def process(self) -> dict:
+        doc = database.collection("posts").document(self.request.post_id)
+        data = doc.get().to_dict()
+        uid = get_uid_of(self.request.id_token)
+        if uid in data["text"]["results"]:
+            data["text"]["choices"][data["text"]["results"][uid]]['vote'] -= 1
+        data["text"]["choices"][self.request.choice_index]['vote'] += 1
+        data["text"]["results"][uid] = self.request.choice_index
+        doc.update(data)
+        return {}

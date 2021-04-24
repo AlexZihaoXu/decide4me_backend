@@ -56,6 +56,16 @@ async def req_new_post_image(data: str=Form(...), image: UploadFile = File(...))
     return response.process()
 
 
+@app.post("/vote/text")
+async def req_vote_text(data: dict):
+    try:
+        request = VoteTextRequest(data)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    response = VoteTextResponse(request)
+    return response.process()
+
+
 @app.get("/")
 async def root():
     return RedirectResponse("http://alex-xu.site:8000/")
@@ -68,5 +78,6 @@ if __name__ == '__main__':
         os.getcwd() + "\n" + \
         "#" * 10
     )
+
     uvicorn.run(app, host="0.0.0.0", port=8080)
     ...
